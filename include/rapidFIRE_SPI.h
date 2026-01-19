@@ -1,5 +1,6 @@
 // rapidFIRE_SPI.h
 // Copyright 2023 GOROman.
+// Updates by Trent Lane 2026
 
 #pragma once
 
@@ -7,30 +8,30 @@
 
 struct QUERY_RSSI
 {
-    int16_t raw_rx1;
-    int16_t raw_rx2;
-    int16_t scaled_rx1;
-    int16_t scaled_rx2;
+  int16_t raw_rx1;
+  int16_t raw_rx2;
+  int16_t scaled_rx1;
+  int16_t scaled_rx2;
 };
 
 struct QUERY_FIRMWARE_VERSION
 {
-    byte oled[3]; // rapidFIRE OLED firmware version.
-    byte core[3]; // rapidFIRE core firmware version.
+  byte oled[3]; // rapidFIRE OLED firmware version.
+  byte core[3]; // rapidFIRE core firmware version.
 };
 
 struct QUERY_VOLTAGE
 {
-    float voltage; // 4.222 V
+  float voltage; // 4.222 V
 };
 
 typedef int RF_RESULT;
 
 enum
 {
-    RF_RESULT_OK = 0,
-    RF_RESULT_ERROR = -1,
-    RF_RESULT_ERROR_CHECKSUM_MISSMATCH = -2,
+  RF_RESULT_OK = 0,
+  RF_RESULT_ERROR = -1,
+  RF_RESULT_ERROR_CHECKSUM_MISSMATCH = -2,
 };
 
 class SPIClass;
@@ -44,56 +45,57 @@ class rapidFIRE_SPI
 
     SPIClass *spi = NULL;
 
-public:
+  public:
     enum BAND
     {
-        BAND_F = 0x01, // - ImmersionRC / FatShark
-        BAND_R = 0x02, // - RaceBand
-        BAND_E = 0x03, // - Boscam E
-        BAND_B = 0x04, // - Boscam B
-        BAND_A = 0x05, // - Boscam A
-        BAND_L = 0x06, // - LowRace
-        BAND_X = 0x07, // - Band X
+      BAND_F = 0x01, // - ImmersionRC / FatShark
+      BAND_R = 0x02, // - RaceBand
+      BAND_E = 0x03, // - Boscam E
+      BAND_B = 0x04, // - Boscam B
+      BAND_A = 0x05, // - Boscam A
+      BAND_L = 0x06, // - LowRace
+      BAND_X = 0x07, // - Band X
     };
 
     enum RXMODULE
     {
-        BOTH = 0x00,  // - Both
-        UPPER = 0x01, // - Upper
-        LOWER = 0x02, // - Lower
+      BOTH = 0x00,  // - Both
+      UPPER = 0x01, // - Upper
+      LOWER = 0x02, // - Lower
     };
 
     enum OSDMODE
     {
-        OFF = 0,             // - Off
-        LOCKONLY = 1,        // - LockOnly
-        DEFAULTMODE = 2,     // - Default
-        LOCKANDSTANDARD = 3, // - LockAndStandard
-        RSSIBARSLITE = 4,    // - RSSIBarsLite
-        RSSIBARS = 5,        // - RSSIBars
-        UNIQUIE_ID = 6,      // - Unique ID
-        INTERNAL_USE = 7,    // - Internal use
-        USERTEXT = 8,        // - UserText
+      OFF = 0,             // - Off
+      LOCKONLY = 1,        // - LockOnly
+      DEFAULTMODE = 2,     // - Default
+      LOCKANDSTANDARD = 3, // - LockAndStandard
+      RSSIBARSLITE = 4,    // - RSSIBarsLite
+      RSSIBARS = 5,        // - RSSIBars
+      UNIQUIE_ID = 6,      // - Unique ID
+      INTERNAL_USE = 7,    // - Internal use
+      USERTEXT = 8,        // - UserText
 
     };
     enum RAPIDFIREMODE
     {
-        RAPIDFIRE_1 = 0x00, // - RapidFIRE #1
-        RAPIDFIRE_2 = 0x01, // - RapidFIRE #2
-        LEGACY = 0x02,      // - Legacy
+      RAPIDFIRE_1 = 0x00, // - RapidFIRE #1
+      RAPIDFIRE_2 = 0x01, // - RapidFIRE #2
+      LEGACY = 0x02,      // - Legacy
     };
 
-private:
+  private:
     RF_RESULT recvCommand(uint8_t *data, size_t len);
     RF_RESULT sendCommand(uint16_t command, byte *data = NULL, size_t len = 0);
 
-public:
-    rapidFIRE_SPI(int pin_SCK, int pin_DATA, int pin_SS, int freq = 60000);
+  public:
+	rapidFIRE_SPI(); // empty constructor, pins are now declared in begin()
     ~rapidFIRE_SPI();
 
-    RF_RESULT begin();
+	// GOROman's "int freq = 60000" was changed to 80000
+	RF_RESULT begin(int pin_SCK, int pin_DATA, int pin_SS, int freq = 80000);
     RF_RESULT end();
-
+	
     // Query
     RF_RESULT getFirmwareVersion(QUERY_FIRMWARE_VERSION *version);
     RF_RESULT getRSSI(QUERY_RSSI *rssi);
